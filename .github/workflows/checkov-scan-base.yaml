@@ -45,6 +45,7 @@ jobs:
           # soft_fail_on: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
           directory: '.'
           output_file_path: results.sarif
+          external_checks_dirs: ./checkov-policies
 
       - name: Upload SARIF file (Source Code)
         if: ${{ success() || failure() }}
