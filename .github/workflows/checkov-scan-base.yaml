@@ -36,7 +36,7 @@ jobs:
         uses: bridgecrewio/checkov-action@v12
         with:
           output_format: cli,sarif
-          quiet: true
+          quiet: false
           # Enabling soft_fail temporarily for easier adoption. Once repos are compliant, remove this and use skip_check or soft_fail_on containing the global suppression list agreed by the SWG.
           soft_fail: true
           # Use skip_check if we don't want the check to appear in the console.
@@ -45,7 +45,7 @@ jobs:
           # soft_fail_on: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
           directory: '.'
           output_file_path: results.sarif
-          external_checks_dirs: ./checkov-policies
+          external_checks_dirs: checkov-policies
 
       - name: Upload SARIF file (Source Code)
         if: ${{ success() || failure() }}
