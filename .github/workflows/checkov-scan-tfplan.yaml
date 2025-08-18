@@ -34,6 +34,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Checkout reusable workflow for custom policies
+        uses: actions/checkout@v4
+        with:
+          repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
+          ref: 'add-custom-policy'
+          path: 'central-checkov-policies'
+
       - uses: aws-actions/configure-aws-credentials@v4
         id: assume
         if: ${{ inputs.plan_role != '' }}
@@ -83,6 +90,7 @@ jobs:
           # soft_fail_on: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
           directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
           output_file_path: results-plan.sarif
+          external_checks_dirs: central-checkov-policies
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
@@ -105,6 +113,7 @@ jobs:
           # soft_fail_on: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
           directory: '.'
           output_file_path: results-root.sarif
+          external_checks_dirs: central-checkov-policies
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
