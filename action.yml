@@ -15,22 +15,22 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Configure SSH Known Hosts
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ inputs.known-hosts }}" > ~/.ssh/known_hosts
-        chmod 644 ~/.ssh/known_hosts
-      shell: bash
-
-    - name: Checkout custom policies repository
-      uses: actions/checkout@v4
-      with:
-        repository: 'git@github.com:UKHomeOffice/core-cloud-workflow-checkov-sast-scan.git'
-        ref: 'composite-action'
-        path: 'central-checkov-policies'
-        token: ${{ inputs.ghes-pat }}
-        #ssh-key: ${{ inputs.deploy-key }}
-
+#    - name: Configure SSH Known Hosts
+#      run: |
+#        mkdir -p ~/.ssh
+#        echo "${{ inputs.known-hosts }}" > ~/.ssh/known_hosts
+#        chmod 644 ~/.ssh/known_hosts
+#      shell: bash
+#
+#    - name: Checkout custom policies repository
+#      uses: actions/checkout@v4
+#      with:
+#        repository: 'git@github.com:UKHomeOffice/core-cloud-workflow-checkov-sast-scan.git'
+#        ref: 'composite-action'
+#        path: 'central-checkov-policies'
+#        token: ${{ inputs.ghes-pat }}
+#        ssh-key: ${{ inputs.deploy-key }}
+#
     - name: Run Checkov Scan
       id: checkov_scan
       uses: bridgecrewio/checkov-action@v12
@@ -40,7 +40,7 @@ runs:
         soft_fail: true
         directory: '.'
         output_file_path: results.sarif
-        external_checks_dirs: central-checkov-policies
+        #external_checks_dirs: central-checkov-policies
 
     - name: Upload SARIF file
       if: ${{ success() || failure() }}
