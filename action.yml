@@ -12,6 +12,12 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Configure SSH Known Hosts
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts
+
     - name: Checkout custom policies repository
       uses: actions/checkout@v4
       with:
