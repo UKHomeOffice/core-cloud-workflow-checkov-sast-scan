@@ -5,6 +5,9 @@ inputs:
   deploy-key:
     description: 'The SSH deploy key for checking out the custom policies repo.'
     required: true
+  known-hosts:
+    description: 'The known_hosts entry for the GHES instance.'
+    required: true
 
 runs:
   using: "composite"
@@ -15,8 +18,9 @@ runs:
     - name: Configure SSH Known Hosts
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+        echo "${{ inputs.known-hosts }}" > ~/.ssh/known_hosts
         chmod 644 ~/.ssh/known_hosts
+      shell: bash
 
     - name: Checkout custom policies repository
       uses: actions/checkout@v4
