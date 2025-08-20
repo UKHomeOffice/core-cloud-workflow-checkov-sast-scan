@@ -1,0 +1,35 @@
+name: 'Checkov Scan'
+description: 'A Checkov scan using centrally-stored custom policies'
+
+inputs:
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Checkout custom policies repository
+      uses: actions/checkout@v4
+      with:
+        repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
+        ref: 'composite-action'
+        path: 'central-checkov-policies'
+
+    - name: Run Checkov Scan
+      id: checkov_scan
+      uses: bridgecrewio/checkov-action@v12
+      with:
+        output_format: cli,sarif
+        quiet: true
+        soft_fail: true
+        directory: '.'
+        output_file_path: results.sarif
+        external_checks_dirs: central-checkov-policies
+
+    - name: Upload SARIF file
+      if: ${{ success() || failure() }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'results.sarif'
+        category: 'checkov-scan'
