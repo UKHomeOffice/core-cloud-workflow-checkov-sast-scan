@@ -1,8 +1,6 @@
 name: 'Checkov Scan'
 description: 'A Checkov scan using centrally-stored custom policies'
 
-inputs:
-
 runs:
   using: "composite"
   steps:
