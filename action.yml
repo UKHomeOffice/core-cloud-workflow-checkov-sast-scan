@@ -13,6 +13,7 @@ runs:
         repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
         ref: 'composite-action'
         path: 'central-checkov-policies'
+        ssh-key: ${{ secrets.WORKFLOW_REPO_DEPLOY_KEY }}
 
     - name: Run Checkov Scan
       id: checkov_scan
