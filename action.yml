@@ -28,7 +28,8 @@ runs:
         repository: 'git@github.com:UKHomeOffice/core-cloud-workflow-checkov-sast-scan.git'
         ref: 'composite-action'
         path: 'central-checkov-policies'
-        ssh-key: ${{ inputs.deploy-key }}
+        token: ${{ inputs.ghes-pat }}
+        #ssh-key: ${{ inputs.deploy-key }}
 
     - name: Run Checkov Scan
       id: checkov_scan
