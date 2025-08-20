@@ -1,6 +1,11 @@
 name: 'Checkov Scan'
 description: 'A Checkov scan using centrally-stored custom policies'
 
+inputs:
+  deploy-key:
+    description: 'The SSH deploy key for checking out the custom policies repo.'
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -13,7 +18,7 @@ runs:
         repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
         ref: 'composite-action'
         path: 'central-checkov-policies'
-        ssh-key: ${{ secrets.WORKFLOW_REPO_DEPLOY_KEY }}
+        ssh-key: ${{ inputs.deploy-key }}
 
     - name: Run Checkov Scan
       id: checkov_scan
