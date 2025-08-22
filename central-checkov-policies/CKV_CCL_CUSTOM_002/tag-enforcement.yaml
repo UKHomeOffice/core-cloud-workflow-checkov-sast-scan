@@ -1,8 +1,8 @@
 metadata:
-  name: "Ensure resources have required tags (CoreCloud and Test)"
+  name: "Ensure resources have required tag (CoreCloud)"
   id: "CKV_CCL_CUSTOM_002"
   category: "CONVENTION"
-  guideline: "All resources must have 'CoreCloud' and 'Test' tags"
+  guideline: "All listed resources must have the 'CoreCloud' tag"
 definition:
   cond_type: "attribute"
   resource_types:
@@ -15,10 +15,5 @@ definition:
     - "aws_lambda_function"
     - "aws_ecs_cluster"
     - "aws_eks_cluster"
-  attribute: "tags"
-  operator: "and"
-  conditions:
-    - operator: "exists"
-      key: "CoreCloud"
-    - operator: "exists"
-      key: "Test"
+  attribute: "tags.CoreCloud"
+  operator: "exists"
