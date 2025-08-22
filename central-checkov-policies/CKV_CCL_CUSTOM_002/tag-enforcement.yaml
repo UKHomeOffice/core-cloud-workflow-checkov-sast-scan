@@ -1,0 +1,19 @@
+metadata:
+  name: "Ensure resources have required tag (CoreCloud)"
+  id: "CKV_CCL_CUSTOM_002"
+  category: "CONVENTION"
+  guideline: "All listed resources must have the 'CoreCloud' tag"
+definition:
+  cond_type: "attribute"
+  resource_types:
+    - "aws_instance"
+    - "aws_s3_bucket"
+    - "aws_db_instance"
+    - "aws_vpc"
+    - "aws_subnet"
+    - "aws_security_group"
+    - "aws_lambda_function"
+    - "aws_ecs_cluster"
+    - "aws_eks_cluster"
+  attribute: "tags.CoreCloud"
+  operator: "exists"
