@@ -72,4 +72,4 @@ Add the above config into the following directory in your repository `.github/wo
 
 ## Custom Policies
 
-Core Cloud centrally manages custom policies within this repo. These can be found at [central-checkov-policies](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/central-checkov-policies) and are run against all repos. If you wish to add additional custom policies after developing and testing these locally, please raise a PR and contact Team Sauron who will carry out further testing before merging for general use.
+Core Cloud centrally manages custom policies within this repo. These can be found at [central-checkov-policies](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/central-checkov-policies) and are run against all repos. If you wish to add additional custom policies after developing and testing these locally, please raise a PR and contact Team Sauron who will carry out further testing before merging for general use. Checkov supports policies written in both YAML and Python. Example policies are provided for both formats with IDs CKV_CCL_CUSTOM_001 and CKV_CCL_CUSTOM_002.

@@ -36,7 +36,12 @@ jobs:
         with:
           repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
           ref: 'add-custom-policy'
-          path: 'central-checkov-policies'
+          path: 'checkout-central-checkov-policies'
+
+      - name: Move policies
+        run: |
+          mkdir -p central-checkov-policies
+          mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
       - name: Run Checkov Scan
         id: checkov_scan
