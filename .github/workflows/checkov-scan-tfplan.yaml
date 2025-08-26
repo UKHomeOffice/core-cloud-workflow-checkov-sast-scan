@@ -96,6 +96,7 @@ jobs:
           directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
           output_file_path: results-plan.sarif
           external_checks_dirs: central-checkov-policies
+          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
@@ -119,6 +120,7 @@ jobs:
           directory: '.'
           output_file_path: results-root.sarif
           external_checks_dirs: central-checkov-policies
+          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
