@@ -31,6 +31,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Checkout reusable workflow for custom policies
+        uses: actions/checkout@v4
+        with:
+          repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
+          ref: 'add-custom-policy'
+          path: 'checkout-central-checkov-policies'
+
+      - name: Move policies
+        run: |
+          mkdir -p central-checkov-policies
+          mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
+
       - name: Run Checkov Scan
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
@@ -45,7 +57,8 @@ jobs:
           # soft_fail_on: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
           directory: '.'
           output_file_path: results.sarif
-          external_checks_dirs: checkov-policies
+          external_checks_dirs: central-checkov-policies
+          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
 
       - name: Upload SARIF file (Source Code)
         if: ${{ success() || failure() }}
