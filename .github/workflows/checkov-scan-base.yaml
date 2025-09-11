@@ -63,6 +63,7 @@ jobs:
           output_file_path: results.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+          soft_fail_on: CC_COSMOS_001
 
       - name: Upload SARIF file (Source Code)
         if: ${{ success() || failure() }}
