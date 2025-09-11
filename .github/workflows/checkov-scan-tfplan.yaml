@@ -121,6 +121,10 @@ jobs:
           echo "Running Checkov scan on pwd..."
           pwd
           ls -l
+          echo "Contents of central-checkov-policies:"
+          ls -l central-checkov-policies
+          echo "Contents of checkout-central-checkov-policies:"
+          ls -l checkout-central-checkov-policies
 
       - name: Run Checkov Scan (Iqbal test)
         id: checkov_scan
