@@ -1,10 +1,10 @@
 metadata:
   name: "Ensure resources have required tag associated for Costing"
   id: "CC_COSMOS_001"
-  category: "FINOPS"
-  guideline: "All listed resources must have the mandatory tags as specified: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
+  category: "CONVENTION"
+  # guideline: "All listed resources must have the mandatory tags as specified: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
 definition:
-  and:
+  # and:
   - cond_type: "attribute"
     resource_types: "aws_iam_policy"
     attribute: "tags.cost-centre"

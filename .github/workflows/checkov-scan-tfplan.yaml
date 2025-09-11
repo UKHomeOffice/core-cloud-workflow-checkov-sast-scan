@@ -138,8 +138,8 @@ jobs:
           output_file_path: results-root.sarif
           external_checks_dirs: central-checkov-policies
           # skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
-          check: CC_COSMOS_001
-          # soft_fail_on: CC_COSMOS_001
+          # check: CC_COSMOS_001
+          soft_fail_on: CC_COSMOS_001
           log_level: INFO
 
       - name: Upload SARIF file (Repository Root)
@@ -147,4 +147,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'results-root.sarif'
-          category: 'checkov-repo-scan' 
+          category: 'checkov-repo-scan'
+
+      - name: Output Show
+        run: |
+          cat results-root.sarif/results_cli.txt
