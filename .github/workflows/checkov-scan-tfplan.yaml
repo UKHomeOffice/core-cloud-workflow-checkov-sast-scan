@@ -142,6 +142,12 @@ jobs:
           soft_fail_on: CC_COSMOS_001
           log_level: INFO
 
+      - name: Output Show
+        run: |
+          pwd
+          ls -l results-root.sarif
+          cat results-root.sarif/results_cli.txt
+
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v3
@@ -149,6 +155,3 @@ jobs:
           sarif_file: 'results-root.sarif'
           category: 'checkov-repo-scan'
 
-      - name: Output Show
-        run: |
-          cat results-root.sarif/results_cli.txt
