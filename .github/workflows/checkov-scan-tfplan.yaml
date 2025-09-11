@@ -137,7 +137,7 @@ jobs:
           directory: '.'
           output_file_path: results-root.sarif
           external_checks_dirs: central-checkov-policies
-          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+          # skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
           check: CC_COSMOS_001
           # soft_fail_on: CC_COSMOS_001
           log_level: INFO
