@@ -110,7 +110,7 @@ jobs:
           sarif_file: 'results-plan.sarif'
           category: 'checkov-plan-scan'
 
-      - name: Run Checkov Scan
+      - name: Run Checkov Scan (Iqbal test)
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
         with:
