@@ -110,10 +110,10 @@ jobs:
           sarif_file: 'results-plan.sarif'
           category: 'checkov-plan-scan'
 
-      - name: Terraform Show (JSON)
-        run: |
-          terraform show -json tfplan.binary > tfplan.json
-          cat tfplan.json
+      # - name: Terraform Show (JSON)
+      #   run: |
+      #     terraform show -json tfplan.binary > tfplan.json
+      #     cat tfplan.json
           
 
       - name: Run Checkov with custom config
