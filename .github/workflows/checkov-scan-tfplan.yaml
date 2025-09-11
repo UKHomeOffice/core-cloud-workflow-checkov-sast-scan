@@ -125,8 +125,8 @@ jobs:
           cd central-checkov-policies
           ls -l central-checkov-policies
           echo "Contents of checkout-central-checkov-policies:"
-          cd checkout-central-checkov-policies
-          ls -l checkout-central-checkov-policies
+          pwd
+          ls -l ../checkout-central-checkov-policies
 
       - name: Run Checkov Scan (Iqbal test)
         id: checkov_scan
