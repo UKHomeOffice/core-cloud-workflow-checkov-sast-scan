@@ -110,6 +110,18 @@ jobs:
           sarif_file: 'results-plan.sarif'
           category: 'checkov-plan-scan'
 
+      - name: Terraform Show (JSON)
+        run: |
+          terraform show -json tfplan.binary > tfplan.json
+          cat tfplan.json
+          
+
+      - name: Run Checkov with custom config
+        run: |
+          echo "Running Checkov scan on pwd..."
+          pwd
+          ls -l
+
       - name: Run Checkov Scan (Iqbal test)
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
@@ -128,7 +140,7 @@ jobs:
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
           check: CC_COSMOS_001
           # soft_fail_on: CC_COSMOS_001
-          log_level: DEBUG
+          log_level: INFO
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
