@@ -148,10 +148,10 @@ jobs:
           ls -l results-root.sarif
           cat results-root.sarif/results_cli.txt
 
-      - name: Upload SARIF file (Repository Root)
-        if: ${{ success() || failure() }}
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'results-root.sarif'
-          category: 'checkov-repo-scan'
+      # - name: Upload SARIF file (Repository Root)
+      #   if: ${{ success() || failure() }}
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: 'results-root.sarif'
+      #     category: 'checkov-repo-scan'
 
