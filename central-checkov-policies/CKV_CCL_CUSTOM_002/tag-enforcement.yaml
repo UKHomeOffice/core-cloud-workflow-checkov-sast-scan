@@ -15,5 +15,6 @@ definition:
     - "aws_lambda_function"
     - "aws_ecs_cluster"
     - "aws_eks_cluster"
+    - "aws_iam_policy"
   attribute: "tags.CoreCloud"
   operator: "exists"
