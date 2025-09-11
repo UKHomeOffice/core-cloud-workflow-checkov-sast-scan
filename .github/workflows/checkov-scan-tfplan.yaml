@@ -117,7 +117,7 @@ jobs:
           output_format: cli,sarif
           quiet: true
           # Enabling soft_fail temporarily for easier adoption. Once repos are compliant, remove this and use skip_check or soft_fail_on containing the global suppression list agreed by the SWG.
-          soft_fail: true
+          # soft_fail: true
           # Use skip_check if we don't want the check to appear in the console.
           # Use soft_fail_on when we want to make the suppressed check known e.g. for future mitigation.
           # skip_check: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
@@ -126,7 +126,9 @@ jobs:
           output_file_path: results-root.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
-          soft_fail_on: CC_COSMOS_001
+          check: CC_COSMOS_001
+          # soft_fail_on: CC_COSMOS_001
+          framework: terraform
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
