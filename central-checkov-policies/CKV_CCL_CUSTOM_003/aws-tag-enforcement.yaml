@@ -5,10 +5,10 @@ metadata:
   guideline: "All listed resources must have the mandatory tags as specified: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
 definition:
   # and:
-  - cond_type: "attribute"
-    resource_types: "aws_iam_policy"
-    attribute: "tags.cost-centre"
-    operator: "exists"
+  cond_type: "attribute"
+  resource_types: "aws_iam_policy"
+  attribute: "tags.cost-centre"
+  operator: "exists"
     # value: "1709144"
   # - cond_type: "attribute"
   #   resource_types: "taggable"
