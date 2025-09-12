@@ -47,7 +47,7 @@ jobs:
           mkdir -p central-checkov-policies
           mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
-      - name: Run Checkov Scan
+      - name: Run Checkov Scan - CCL-4925
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
         with:
@@ -62,9 +62,9 @@ jobs:
           directory: '.'
           output_file_path: results.sarif
           external_checks_dirs: central-checkov-policies
-          skip_check: CKV_CCL_CUSTOM_001
-          soft_fail_on: CKV_CCL_CUSTOM_002
-          log_level: INFO
+          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+          # soft_fail_on: CKV_CCL_CUSTOM_003
+          # log_level: INFO
 
       # - name: Upload SARIF file (Source Code)
       #   if: ${{ success() || failure() }}

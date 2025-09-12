@@ -1,8 +1,8 @@
 metadata:
   name: "Ensure resources have required tag associated for Costing"
-  id: "CC_COSMOS_001"
+  id: "CKV_CCL_CUSTOM_003"
   category: "CONVENTION"
-  # guideline: "All listed resources must have the mandatory tags as specified: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
+  guideline: "All listed resources must have the mandatory tags as specified: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
 definition:
   # and:
   - cond_type: "attribute"
