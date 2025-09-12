@@ -1,8 +1,8 @@
 metadata:
   name: "Ensure resources have required tag associated for Costing"
-  id: "CKV_CCL_CUSTOM_003"
+  id: "CCL_COSMOS_FINOPS_TAGS"
   category: "CONVENTION"
-  guideline: "All listed resources must have the mandatory tags as specified: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
+  guideline: "All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
   severity: "HIGH"
 definition:
   and:
