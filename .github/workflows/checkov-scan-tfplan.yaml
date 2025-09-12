@@ -42,13 +42,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
-          ref: ${{ inputs.version-tag }}
-          path: 'checkout-central-checkov-policies'
+          # ref: ${{ inputs.version-tag }}
+          ref: 'CCL-4925'
+          path: 'central-checkov-policies'
 
-      - name: Move policies
-        run: |
-          mkdir -p central-checkov-policies
-          mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
+      # - name: Move policies
+      #   run: |
+      #     mkdir -p central-checkov-policies
+      #     mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
       - uses: aws-actions/configure-aws-credentials@v4
         id: assume
@@ -100,8 +101,6 @@ jobs:
           directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
           output_file_path: results-plan.sarif
           external_checks_dirs: central-checkov-policies
-          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
-          soft_fail_on: CC_COSMOS_001
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
@@ -133,9 +132,9 @@ jobs:
         uses: bridgecrewio/checkov-action@v12
         with:
           output_format: cli,sarif
-          # quiet: true
+          quiet: true
           # Enabling soft_fail temporarily for easier adoption. Once repos are compliant, remove this and use skip_check or soft_fail_on containing the global suppression list agreed by the SWG.
-          # soft_fail: true
+          soft_fail: true
           # Use skip_check if we don't want the check to appear in the console.
           # Use soft_fail_on when we want to make the suppressed check known e.g. for future mitigation.
           # skip_check: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
