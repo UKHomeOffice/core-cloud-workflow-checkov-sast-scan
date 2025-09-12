@@ -42,8 +42,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
-          # ref: ${{ inputs.version-tag }}
-          ref: 'CCL-4925'
+          ref: ${{ inputs.version-tag }}
+          # ref: 'CCL-4925'
           path: 'central-checkov-policies'
 
       - name: Move policies
