@@ -62,7 +62,7 @@ jobs:
           directory: '.'
           output_file_path: results.sarif
           external_checks_dirs: central-checkov-policies
-          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+          skip_check: CKV_CCL_CUSTOM_001
           # log_level: INFO
 
       # - name: Upload SARIF file (Source Code)

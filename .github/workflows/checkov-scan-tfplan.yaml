@@ -43,8 +43,7 @@ jobs:
         with:
           repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
           ref: ${{ inputs.version-tag }}
-          # ref: 'CCL-4925'
-          path: 'central-checkov-policies'
+          path: 'checkout-central-checkov-policies'
 
       - name: Move policies
         run: |
@@ -101,6 +100,7 @@ jobs:
           directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
           output_file_path: results-plan.sarif
           external_checks_dirs: central-checkov-policies
+          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
@@ -109,25 +109,7 @@ jobs:
           sarif_file: 'results-plan.sarif'
           category: 'checkov-plan-scan'
 
-      # - name: Terraform Show (JSON)
-      #   run: |
-      #     terraform show -json tfplan.binary > tfplan.json
-      #     cat tfplan.json
-          
-
-      - name: Run Checkov with custom config
-        run: |
-          echo "Running Checkov scan on pwd..."
-          pwd
-          ls -l
-          echo "Contents of central-checkov-policies:"
-          cd central-checkov-policies
-          ls -l central-checkov-policies
-          echo "Contents of checkout-central-checkov-policies:"
-          pwd
-          ls -l ../checkout-central-checkov-policies
-
-      - name: Run Checkov Scan (Iqbal test)
+      - name: Run Checkov Scan
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
         with:
@@ -142,21 +124,11 @@ jobs:
           directory: '.'
           output_file_path: results-root.sarif
           external_checks_dirs: central-checkov-policies
-          # skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
-          # check: CC_COSMOS_001
-          soft_fail_on: CKV_CCL_CUSTOM_002
-          log_level: INFO
+          skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
 
-      - name: Output Show
-        run: |
-          pwd
-          ls -l results-root.sarif
-          cat results-root.sarif/results_cli.txt
-
-      # - name: Upload SARIF file (Repository Root)
-      #   if: ${{ success() || failure() }}
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   with:
-      #     sarif_file: 'results-root.sarif'
-      #     category: 'checkov-repo-scan'
-
+      - name: Upload SARIF file (Repository Root)
+        if: ${{ success() || failure() }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'results-root.sarif'
+          category: 'checkov-repo-scan' 
