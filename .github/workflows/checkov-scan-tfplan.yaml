@@ -46,10 +46,10 @@ jobs:
           ref: 'CCL-4925'
           path: 'central-checkov-policies'
 
-      # - name: Move policies
-      #   run: |
-      #     mkdir -p central-checkov-policies
-      #     mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
+      - name: Move policies
+        run: |
+          mkdir -p central-checkov-policies
+          mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
       - uses: aws-actions/configure-aws-credentials@v4
         id: assume
