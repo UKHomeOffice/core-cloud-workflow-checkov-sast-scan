@@ -47,6 +47,18 @@ jobs:
           mkdir -p central-checkov-policies
           mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
+      - name: Run Checkov with custom config
+        run: |
+          echo "Running Checkov scan on pwd..."
+          pwd
+          ls -l
+          echo "Contents of central-checkov-policies:"
+          cd central-checkov-policies
+          ls -l central-checkov-policies
+          echo "Contents of checkout-central-checkov-policies:"
+          pwd
+          ls -l ../checkout-central-checkov-policies
+          
       - name: Run Checkov Scan - CCL-4925
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
