@@ -1,0 +1,17 @@
+name: Sync with GHES Instance
+
+on:
+  push:
+    branches:
+      - reusable-workflows-sync
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-with-hub:
+    uses: UKHomeOffice/core-cloud-workflows-actions-sync/.github/workflows/sync_hub.yaml@sync-branch
+    with:
+      ghes-instances: |
+        https://github.ci.core.homeoffice.gov.uk
