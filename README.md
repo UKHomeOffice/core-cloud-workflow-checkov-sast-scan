@@ -28,7 +28,7 @@ The simplest config to use is:
 
      jobs:
        checkov-scan:
-         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.3.0
+         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.4.0
 
 ## Inplementation for Terraform Plan files
 
@@ -60,7 +60,7 @@ Add the above config into the following directory in your repository `.github/wo
      
      jobs:
        sast-checkov-scan-plan:
-         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-tfplan.yaml@1.3.0
+         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-tfplan.yaml@1.4.0
          with:
            # Optional inputs depending on code structure
            path: 'e.g. terraform/environment/sandbox-ops-tooling'
@@ -73,3 +73,24 @@ Add the above config into the following directory in your repository `.github/wo
 ## Custom Policies
 
 Core Cloud centrally manages custom policies within this repo. These can be found at [central-checkov-policies](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/central-checkov-policies) and are run against all repos. If you wish to add additional custom policies after developing and testing these locally, please raise a PR and contact Team Sauron who will carry out further testing before merging for general use. Checkov supports policies written in both YAML and Python. Example policies are provided for both formats with IDs CKV_CCL_CUSTOM_001 and CKV_CCL_CUSTOM_002.
+
+## Composite Action
+
+If you wish to just add a step to your existing workflow logic, you can use the composite action instead. Make sure these minimum permissions are added.
+
+      permissions:
+        contents: read
+        id-token: write
+        actions: read
+        security-events: write
+        
+      jobs:
+        example-job:
+          runs-on: ubuntu-latest
+          steps:  
+            - name: Run Checkov Scan on the source code and existing plan files
+              uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan@1.4.0
+              with:
+                path: '.'
+
+
