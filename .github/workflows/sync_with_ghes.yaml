@@ -15,4 +15,8 @@ jobs:
     with:
       ghes-instances: |
         https://github.cc-test-ops-tooling.np.core.homeoffice.gov.uk
-      owner: Home-Office-Test
+      ghes-owner: |
+        Home-Office-Test
+    secrets:
+      APP_ID: ${{ secrets.GHES_APP_ID }}
+      PRIVATE_KEY: ${{ secrets.GHES_PRIVATE_KEY }}
