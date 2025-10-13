@@ -15,8 +15,6 @@ jobs:
     with:
       ghes-instances: |
         https://github.cc-live-ops-tooling.core.homeoffice.gov.uk
-      ghes-owner: |
-        home-office-sandbox
     secrets:
       APP_ID: ${{ secrets.GHES_APP_ID }}
       PRIVATE_KEY: ${{ secrets.GHES_PRIVATE_KEY }}
