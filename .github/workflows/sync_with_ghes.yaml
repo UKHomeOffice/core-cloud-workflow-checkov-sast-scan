@@ -11,17 +11,12 @@ permissions:
 
 jobs:
   sync-with-hub:
-    strategy:
-      matrix:
-        include:
-          - env: live_ops_tooling
-            ghes_instances: https://github.cc-live-ops-tooling.core.homeoffice.gov.uk
-            ghes_owners: home-office-sandbox
-    environment: ${{ matrix.env }}
     uses: UKHomeOffice/core-cloud-workflows-actions-sync/.github/workflows/sync_hub.yaml@sync-branch
+    with:
+      ghes-instances: |
+        https://github.cc-live-ops-tooling.core.homeoffice.gov.uk
+      ghes-owners: |
+        home-office-sandbox
     secrets:
       APP_ID: ${{ secrets.GHES_APP_ID }}
       PRIVATE_KEY: ${{ secrets.GHES_PRIVATE_KEY }}
-    with:
-     ghes-instances: ${{ matrix.ghes_instance }}
-     ghes-owners: ${{ matrix.ghes_owners }}
