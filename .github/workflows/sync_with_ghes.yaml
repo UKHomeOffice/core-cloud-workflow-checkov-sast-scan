@@ -4,7 +4,9 @@ on:
   push:
     tags:
       - '*'
-  workflow_dispatch:
+    branches:
+      - main
+      - reusable-workflows-sync
 
 permissions:
   contents: write
