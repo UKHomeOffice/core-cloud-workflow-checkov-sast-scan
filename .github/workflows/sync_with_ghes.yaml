@@ -10,13 +10,11 @@ permissions:
   contents: write
 
 jobs:
-  sync-with-hub:
+  sync-live-ops-tooling:
+    name: Sync to live-ops-tooling GHES instance
     uses: UKHomeOffice/core-cloud-workflows-actions-sync/.github/workflows/sync_hub.yaml@sync-branch
     with:
-      ghes-instances: |
-        https://github.cc-live-ops-tooling.core.homeoffice.gov.uk
-      ghes-owners: |
-        home-office-sandbox
-    secrets:
-      APP_ID: ${{ secrets.GHES_APP_ID }}
-      PRIVATE_KEY: ${{ secrets.GHES_PRIVATE_KEY }}
+      ghes-instance-url: 'https://github.cc-live-ops-tooling.core.homeoffice.gov.uk'
+      ghes-owner: 'home-office-sandbox'
+      environment: 'live-ops-tooling'
+    secrets: inherit
