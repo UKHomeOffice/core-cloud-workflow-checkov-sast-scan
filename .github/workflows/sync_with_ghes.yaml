@@ -2,8 +2,8 @@ name: Sync with GHES Instance
 
 on:
   push:
-    branches:
-      - reusable-workflows-sync
+    tags:
+      - '*'
   workflow_dispatch:
 
 permissions:
