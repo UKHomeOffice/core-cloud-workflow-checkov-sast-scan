@@ -101,6 +101,7 @@ jobs:
           output_file_path: results-plan.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+          download_external_modules: true
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
