@@ -28,7 +28,7 @@ The simplest config to use is:
 
      jobs:
        checkov-scan:
-         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.4.0
+         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.5.0
 
 ## Inplementation for Terraform Plan files
 
@@ -60,7 +60,7 @@ Add the above config into the following directory in your repository `.github/wo
      
      jobs:
        sast-checkov-scan-plan:
-         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-tfplan.yaml@1.4.0
+         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-tfplan.yaml@1.5.0
          with:
            # Optional inputs depending on code structure
            path: 'e.g. terraform/environment/sandbox-ops-tooling'
@@ -89,7 +89,7 @@ If you wish to just add a step to your existing workflow logic, you can use the 
           runs-on: ubuntu-latest
           steps:  
             - name: Run Checkov Scan on the source code and existing plan files
-              uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan@1.4.0
+              uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan@1.5.0
               with:
                 path: '.'
 

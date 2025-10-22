@@ -41,6 +41,7 @@ jobs:
           repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
           ref: ${{ inputs.version-tag }}
           path: 'checkout-central-checkov-policies'
+          download_external_modules: true
 
       - name: Move policies
         run: |
