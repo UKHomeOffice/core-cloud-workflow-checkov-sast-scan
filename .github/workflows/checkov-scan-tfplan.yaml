@@ -20,6 +20,11 @@ on:
         required: false
         type: string
         default: 'main'
+      runner:
+        description: 'For use with a specific runner'
+        type: string
+        required: false
+        default: 'ubuntu-latest'
     secrets:
       account_id:
         required: false
@@ -32,7 +37,7 @@ permissions:
 
 jobs:
   checkov-scan:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner }}
     environment: ${{ inputs.env_name || '' }}
     steps:
       - name: Checkout code
