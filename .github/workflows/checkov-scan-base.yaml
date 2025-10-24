@@ -22,6 +22,11 @@ on:
         type: string
         required: false
         default: 'ubuntu-latest'
+      org:
+        description: 'Set if using GHES instance'
+        type: string
+        required: false
+        default: 'UKHomeOffice'
     secrets:
       account_id:
         required: false
@@ -43,7 +48,7 @@ jobs:
       - name: Checkout reusable workflow for custom policies
         uses: actions/checkout@v4
         with:
-          repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
+          repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
           ref: ${{ inputs.version-tag }}
           path: 'checkout-central-checkov-policies'
           download_external_modules: true

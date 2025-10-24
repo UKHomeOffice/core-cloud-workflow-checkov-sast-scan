@@ -10,6 +10,11 @@ inputs:
     description: 'The git ref of the central policies repo to use.'
     required: false
     default: 'main'
+  org:
+    description: 'Set if using GHES instance'
+    type: string
+    required: false
+    default: 'UKHomeOffice'
 
 runs:
   using: 'composite'
@@ -17,7 +22,7 @@ runs:
     - name: Checkout custom policies
       uses: actions/checkout@v4
       with:
-        repository: 'UKHomeOffice/core-cloud-workflow-checkov-sast-scan'
+        repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
         ref: ${{ inputs.version-tag }}
         path: 'checkout-central-checkov-policies'
 
