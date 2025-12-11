@@ -10,8 +10,8 @@ This is a reusable workflow for SAST scanning source code and artifacts. This is
 
 There are 2 Checkov reusable workflow files that your workflow can use. NOTE: These are for informational purposes only.
 
-1. [checkov-scan-base.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml) - For scanning [compatible](https://spacelift.io/blog/what-is-checkov#what-is-checkov) source code at rest.
-2. [checkov-scan-tfplan.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-tfplan.yaml) - Only to be used for scanning Terraform plan files.
+1. [checkov-scan-base.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/blob/main/.github/workflows/checkov-scan-base.yaml) - For scanning [compatible](https://spacelift.io/blog/what-is-checkov#what-is-checkov) source code at rest.
+2. [checkov-scan-tfplan.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/blob/main/.github/workflows/checkov-scan-tfplan.yaml) - Only to be used for scanning Terraform plan files.
 ## Implementation for source code 
 The simplest config to use is:
 
