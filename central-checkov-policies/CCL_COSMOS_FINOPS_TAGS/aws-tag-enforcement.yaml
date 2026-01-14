@@ -40,7 +40,7 @@ definition:
     resource_types: "taggable"
     attribute: "tags.budget-holder"
     operator: "exists"
-    # value: "corecloud@homeoffice.gov.uk"
+    # value: "pleasechangeme@homeoffice.gov.uk"
   - cond_type: "attribute"
     resource_types: "taggable"
     attribute: "tags.environment-type"
