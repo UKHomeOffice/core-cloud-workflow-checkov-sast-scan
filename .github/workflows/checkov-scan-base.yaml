@@ -75,9 +75,21 @@ jobs:
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
 
-      - name: Upload SARIF file (Source Code)
-        if: ${{ success() || failure() }}
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Debug SARIF file
+        shell: bash
+        run: |
+          ls -lsa results.sarif
+
+      - name: Upload SARIF as artifacts
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: 'results.sarif'
-          category: 'checkov-scan' 
+          name: sarif
+          path: results.sarif
+          retention-days: 1
+
+#      - name: Upload SARIF file (Source Code)
+#        if: ${{ success() || failure() }}
+#        uses: github/codeql-action/upload-sarif@v3
+#        with:
+#          sarif_file: 'results.sarif'
+#          category: 'checkov-scan' 
