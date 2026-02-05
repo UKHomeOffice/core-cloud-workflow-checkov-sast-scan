@@ -1,0 +1,997 @@
+terraform scan results:
+
+Passed checks: 59, Failed checks: 42, Skipped checks: 0
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.mq_broker_sg[0]
+	File: /modules/aws_mq_broker/main.tf:58-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_209: "Ensure MQ broker encrypted by KMS using a customer managed Key (CMK)"
+	FAILED for resource: aws_mq_broker.mq_broker
+	File: /modules/aws_mq_broker/main.tf:116-158
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-mqbroker-is-encrypted-by-key-management-service-kms-using-a-customer-managed-key-cmk
+
+		116 | resource "aws_mq_broker" "mq_broker" {
+		117 |   broker_name                = var.broker_name
+		118 |   engine_type                = var.engine_type
+		119 |   engine_version             = var.engine_version
+		120 |   host_instance_type         = var.host_instance_type
+		121 |   deployment_mode            = var.deployment_mode
+		122 |   publicly_accessible        = var.publicly_accessible
+		123 |   auto_minor_version_upgrade = var.auto_minor_version_upgrade
+		124 | 
+		125 |   # User credentials for the broker
+		126 |   user {
+		127 |     username = var.broker_username
+		128 |     password = local.final_broker_password
+		129 |   }
+		130 | 
+		131 |   subnet_ids = var.subnet_ids
+		132 |   security_groups = local.final_security_group_ids
+		133 | 
+		134 | 
+		135 |   # Maintenance window start time (UTC)
+		136 |   maintenance_window_start_time {
+		137 |     day_of_week = var.maintenance_day_of_week # e.g., MONDAY
+		138 |     time_of_day = var.maintenance_time_of_day # e.g., 03:00
+		139 |     time_zone   = var.maintenance_time_zone   # e.g., UTC
+		140 |   }
+		141 | 
+		142 |   # Enable CloudWatch Logs. Options: "AUDIT", "GENERAL"
+		143 |   logs {
+		144 |     general = var.enable_general_logs
+		145 |     audit   = var.enable_audit_logs
+		146 |   }
+		147 | 
+		148 |   apply_immediately = var.apply_immediately
+		149 | 
+		150 |   tags = merge(
+		151 |     local.common_tags,
+		152 |     var.additional_tags
+		153 |   )
+		154 |   
+		155 |   lifecycle {
+		156 |     ignore_changes = [engine_version]
+		157 |   }
+		158 | }
+
+Check: CKV_AWS_197: "Ensure MQ Broker Audit logging is enabled"
+	FAILED for resource: aws_mq_broker.mq_broker
+	File: /modules/aws_mq_broker/main.tf:116-158
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-mqbroker-audit-logging-is-enabled
+
+		116 | resource "aws_mq_broker" "mq_broker" {
+		117 |   broker_name                = var.broker_name
+		118 |   engine_type                = var.engine_type
+		119 |   engine_version             = var.engine_version
+		120 |   host_instance_type         = var.host_instance_type
+		121 |   deployment_mode            = var.deployment_mode
+		122 |   publicly_accessible        = var.publicly_accessible
+		123 |   auto_minor_version_upgrade = var.auto_minor_version_upgrade
+		124 | 
+		125 |   # User credentials for the broker
+		126 |   user {
+		127 |     username = var.broker_username
+		128 |     password = local.final_broker_password
+		129 |   }
+		130 | 
+		131 |   subnet_ids = var.subnet_ids
+		132 |   security_groups = local.final_security_group_ids
+		133 | 
+		134 | 
+		135 |   # Maintenance window start time (UTC)
+		136 |   maintenance_window_start_time {
+		137 |     day_of_week = var.maintenance_day_of_week # e.g., MONDAY
+		138 |     time_of_day = var.maintenance_time_of_day # e.g., 03:00
+		139 |     time_zone   = var.maintenance_time_zone   # e.g., UTC
+		140 |   }
+		141 | 
+		142 |   # Enable CloudWatch Logs. Options: "AUDIT", "GENERAL"
+		143 |   logs {
+		144 |     general = var.enable_general_logs
+		145 |     audit   = var.enable_audit_logs
+		146 |   }
+		147 | 
+		148 |   apply_immediately = var.apply_immediately
+		149 | 
+		150 |   tags = merge(
+		151 |     local.common_tags,
+		152 |     var.additional_tags
+		153 |   )
+		154 |   
+		155 |   lifecycle {
+		156 |     ignore_changes = [engine_version]
+		157 |   }
+		158 | }
+
+Check: CKV_AWS_149: "Ensure that Secrets Manager secret is encrypted using KMS CMK"
+	FAILED for resource: aws_secretsmanager_secret.rds_password
+	File: /modules/rds/main.tf:29-33
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-secrets-manager-secret-is-encrypted-using-kms
+
+		29 | resource "aws_secretsmanager_secret" "rds_password" {
+		30 |   for_each   = random_password.rds
+		31 |   name       = "${each.key}-rds-password"
+		32 |   description = "RDS master password for ${each.key}"
+		33 | }
+
+Check: CKV_AWS_23: "Ensure every security group and rule has a description"
+	FAILED for resource: aws_security_group.this
+	File: /modules/rds/main.tf:41-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-31
+
+		41 | resource "aws_security_group" "this" {
+		42 |   for_each    = var.security_group_ids == null ? var.instances : {}
+		43 |   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		44 |   description = "Security group for ${each.key} RDS instance"
+		45 |   vpc_id      = var.vpc_id
+		46 | 
+		47 |   ingress {
+		48 |     # Dynamically look up the port based on the instance's engine type
+		49 |     from_port   = lookup(local.engine_ports, each.value.engine, 0)
+		50 |     to_port     = lookup(local.engine_ports, each.value.engine, 0)
+		51 |     protocol    = "tcp"
+		52 |     cidr_blocks = each.value.allowed_cidr_blocks
+		53 |   }
+		54 | 
+		55 |   egress {
+		56 |     from_port   = 0
+		57 |     to_port     = 0
+		58 |     protocol    = "-1"
+		59 |     cidr_blocks = ["0.0.0.0/0"]
+		60 |   }
+		61 | 
+		62 |   tags = merge(var.tags, {
+		63 |     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		64 |   })
+		65 | }
+
+Check: CKV_AWS_382: "Ensure no security groups allow egress from 0.0.0.0:0 to port -1"
+	FAILED for resource: aws_security_group.this
+	File: /modules/rds/main.tf:41-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/bc-aws-382
+
+		41 | resource "aws_security_group" "this" {
+		42 |   for_each    = var.security_group_ids == null ? var.instances : {}
+		43 |   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		44 |   description = "Security group for ${each.key} RDS instance"
+		45 |   vpc_id      = var.vpc_id
+		46 | 
+		47 |   ingress {
+		48 |     # Dynamically look up the port based on the instance's engine type
+		49 |     from_port   = lookup(local.engine_ports, each.value.engine, 0)
+		50 |     to_port     = lookup(local.engine_ports, each.value.engine, 0)
+		51 |     protocol    = "tcp"
+		52 |     cidr_blocks = each.value.allowed_cidr_blocks
+		53 |   }
+		54 | 
+		55 |   egress {
+		56 |     from_port   = 0
+		57 |     to_port     = 0
+		58 |     protocol    = "-1"
+		59 |     cidr_blocks = ["0.0.0.0/0"]
+		60 |   }
+		61 | 
+		62 |   tags = merge(var.tags, {
+		63 |     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		64 |   })
+		65 | }
+
+Check: CKV_AWS_226: "Ensure DB instance gets all minor upgrades automatically"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-db-instance-gets-all-minor-upgrades-automatically
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_133: "Ensure that RDS instances has backup policy"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-rds-instances-have-backup-policy
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_157: "Ensure that RDS instances have Multi-AZ enabled"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-73
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_118: "Ensure that enhanced monitoring is enabled for Amazon RDS instances"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-enhanced-monitoring-is-enabled-for-amazon-rds-instances
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_353: "Ensure that RDS instances have performance insights enabled"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-353
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_293: "Ensure that AWS database instances have deletion protection enabled"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-293
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_16: "Ensure all data stored in the RDS is securely encrypted at rest"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-4
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV_AWS_226: "Ensure DB instance gets all minor upgrades automatically"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-aws-db-instance-gets-all-minor-upgrades-automatically
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_133: "Ensure that RDS instances has backup policy"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-rds-instances-have-backup-policy
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_157: "Ensure that RDS instances have Multi-AZ enabled"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-73
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_118: "Ensure that enhanced monitoring is enabled for Amazon RDS instances"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/ensure-that-enhanced-monitoring-is-enabled-for-amazon-rds-instances
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_353: "Ensure that RDS instances have performance insights enabled"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-353
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_293: "Ensure that AWS database instances have deletion protection enabled"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-293
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_16: "Ensure all data stored in the RDS is securely encrypted at rest"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/general-4
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV_AWS_7: "Ensure rotation for customer created CMKs is enabled"
+	FAILED for resource: aws_kms_key.s3
+	File: /modules/s3/main.tf:1-7
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/logging-8
+
+		1 | resource "aws_kms_key" "s3" {
+		2 |   description             = "KMS key for S3 bucket encryption"
+		3 |   deletion_window_in_days = 7
+		4 |   enable_key_rotation     = false
+		5 | 
+		6 |   tags = local.common_tags
+		7 | }
+
+Check: CKV2_AWS_60: "Ensure RDS instance with copy tags to snapshots is enabled"
+	FAILED for resource: aws_db_instance.managed_password
+	File: /modules/rds/main.tf:68-112
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-60
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CKV2_AWS_60: "Ensure RDS instance with copy tags to snapshots is enabled"
+	FAILED for resource: aws_db_instance.custom_password
+	File: /modules/rds/main.tf:114-165
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-60
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV2_AWS_64: "Ensure KMS key Policy is defined"
+	FAILED for resource: aws_kms_key.s3
+	File: /modules/s3/main.tf:1-7
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-iam-policies/bc-aws-2-64
+
+		1 | resource "aws_kms_key" "s3" {
+		2 |   description             = "KMS key for S3 bucket encryption"
+		3 |   deletion_window_in_days = 7
+		4 |   enable_key_rotation     = false
+		5 | 
+		6 |   tags = local.common_tags
+		7 | }
+
+Check: CKV2_AWS_57: "Ensure Secrets Manager secrets should have automatic rotation enabled"
+	FAILED for resource: aws_secretsmanager_secret.mq_broker_password_secret
+	File: /modules/aws_mq_broker/main.tf:41-51
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-57
+
+		41 | resource "aws_secretsmanager_secret" "mq_broker_password_secret" {
+		42 |   name                    = local.secret_name
+		43 |   description             = "${var.secret_description} for ${var.broker_name}"
+		44 |   kms_key_id              = var.secret_kms_key_id
+		45 |   recovery_window_in_days = var.secret_recovery_window_in_days
+		46 | 
+		47 |   tags = merge(
+		48 |     local.common_tags,
+		49 |     var.additional_tags
+		50 |   )
+		51 | }
+
+Check: CKV2_AWS_57: "Ensure Secrets Manager secrets should have automatic rotation enabled"
+	FAILED for resource: aws_secretsmanager_secret.rds_password
+	File: /modules/rds/main.tf:29-33
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/bc-aws-2-57
+
+		29 | resource "aws_secretsmanager_secret" "rds_password" {
+		30 |   for_each   = random_password.rds
+		31 |   name       = "${each.key}-rds-password"
+		32 |   description = "RDS master password for ${each.key}"
+		33 | }
+
+Check: CKV2_AWS_62: "Ensure S3 buckets should have event notifications enabled"
+	FAILED for resource: aws_s3_bucket.this
+	File: /modules/s3/main.tf:14-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62
+
+		14 | resource "aws_s3_bucket" "this" {
+		15 |   bucket = "${var.project_name}-${var.bucket_name}-${var.environment}-s3"
+		16 |   tags = local.common_tags
+		17 | }
+
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: aws_security_group.mq_broker_sg[0]
+	File: /modules/aws_mq_broker/main.tf:58-114
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: aws_security_group.this
+	File: /modules/rds/main.tf:41-65
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/ensure-that-security-groups-are-attached-to-ec2-instances-or-elastic-network-interfaces-enis
+
+		41 | resource "aws_security_group" "this" {
+		42 |   for_each    = var.security_group_ids == null ? var.instances : {}
+		43 |   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		44 |   description = "Security group for ${each.key} RDS instance"
+		45 |   vpc_id      = var.vpc_id
+		46 | 
+		47 |   ingress {
+		48 |     # Dynamically look up the port based on the instance's engine type
+		49 |     from_port   = lookup(local.engine_ports, each.value.engine, 0)
+		50 |     to_port     = lookup(local.engine_ports, each.value.engine, 0)
+		51 |     protocol    = "tcp"
+		52 |     cidr_blocks = each.value.allowed_cidr_blocks
+		53 |   }
+		54 | 
+		55 |   egress {
+		56 |     from_port   = 0
+		57 |     to_port     = 0
+		58 |     protocol    = "-1"
+		59 |     cidr_blocks = ["0.0.0.0/0"]
+		60 |   }
+		61 | 
+		62 |   tags = merge(var.tags, {
+		63 |     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		64 |   })
+		65 | }
+
+Check: CKV2_AWS_61: "Ensure that an S3 bucket has a lifecycle configuration"
+	FAILED for resource: aws_s3_bucket.this
+	File: /modules/s3/main.tf:14-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61
+
+		14 | resource "aws_s3_bucket" "this" {
+		15 |   bucket = "${var.project_name}-${var.bucket_name}-${var.environment}-s3"
+		16 |   tags = local.common_tags
+		17 | }
+
+Check: CKV_AWS_144: "Ensure that S3 bucket has cross-region replication enabled"
+	FAILED for resource: aws_s3_bucket.this
+	File: /modules/s3/main.tf:14-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled
+
+		14 | resource "aws_s3_bucket" "this" {
+		15 |   bucket = "${var.project_name}-${var.bucket_name}-${var.environment}-s3"
+		16 |   tags = local.common_tags
+		17 | }
+
+Check: CKV_AWS_18: "Ensure the S3 bucket has access logging enabled"
+	FAILED for resource: aws_s3_bucket.this
+	File: /modules/s3/main.tf:14-17
+	Guide: https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-13-enable-logging
+
+		14 | resource "aws_s3_bucket" "this" {
+		15 |   bucket = "${var.project_name}-${var.bucket_name}-${var.environment}-s3"
+		16 |   tags = local.common_tags
+		17 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_secretsmanager_secret.mq_broker_password_secret
+	Severity: HIGH
+	File: /modules/aws_mq_broker/main.tf:41-51
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		41 | resource "aws_secretsmanager_secret" "mq_broker_password_secret" {
+		42 |   name                    = local.secret_name
+		43 |   description             = "${var.secret_description} for ${var.broker_name}"
+		44 |   kms_key_id              = var.secret_kms_key_id
+		45 |   recovery_window_in_days = var.secret_recovery_window_in_days
+		46 | 
+		47 |   tags = merge(
+		48 |     local.common_tags,
+		49 |     var.additional_tags
+		50 |   )
+		51 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_security_group.mq_broker_sg[0]
+	Severity: HIGH
+	File: /modules/aws_mq_broker/main.tf:58-114
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_mq_broker.mq_broker
+	Severity: HIGH
+	File: /modules/aws_mq_broker/main.tf:116-158
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		116 | resource "aws_mq_broker" "mq_broker" {
+		117 |   broker_name                = var.broker_name
+		118 |   engine_type                = var.engine_type
+		119 |   engine_version             = var.engine_version
+		120 |   host_instance_type         = var.host_instance_type
+		121 |   deployment_mode            = var.deployment_mode
+		122 |   publicly_accessible        = var.publicly_accessible
+		123 |   auto_minor_version_upgrade = var.auto_minor_version_upgrade
+		124 | 
+		125 |   # User credentials for the broker
+		126 |   user {
+		127 |     username = var.broker_username
+		128 |     password = local.final_broker_password
+		129 |   }
+		130 | 
+		131 |   subnet_ids = var.subnet_ids
+		132 |   security_groups = local.final_security_group_ids
+		133 | 
+		134 | 
+		135 |   # Maintenance window start time (UTC)
+		136 |   maintenance_window_start_time {
+		137 |     day_of_week = var.maintenance_day_of_week # e.g., MONDAY
+		138 |     time_of_day = var.maintenance_time_of_day # e.g., 03:00
+		139 |     time_zone   = var.maintenance_time_zone   # e.g., UTC
+		140 |   }
+		141 | 
+		142 |   # Enable CloudWatch Logs. Options: "AUDIT", "GENERAL"
+		143 |   logs {
+		144 |     general = var.enable_general_logs
+		145 |     audit   = var.enable_audit_logs
+		146 |   }
+		147 | 
+		148 |   apply_immediately = var.apply_immediately
+		149 | 
+		150 |   tags = merge(
+		151 |     local.common_tags,
+		152 |     var.additional_tags
+		153 |   )
+		154 |   
+		155 |   lifecycle {
+		156 |     ignore_changes = [engine_version]
+		157 |   }
+		158 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_db_subnet_group.this
+	Severity: HIGH
+	File: /modules/rds/main.tf:6-15
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		6  | resource "aws_db_subnet_group" "this" {
+		7  |   count = var.db_subnet_group_name == null ? 1 : 0
+		8  |   # You can create a more dynamic name if you wish
+		9  |   name       = "${var.project_name}-${var.environment}-db-subnet-group"
+		10 |   subnet_ids = var.subnet_ids
+		11 | 
+		12 |   tags = merge(var.tags, {
+		13 |     Name = "${var.project_name}-${var.environment}-db-subnet-group"
+		14 |   })
+		15 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_secretsmanager_secret.rds_password
+	Severity: HIGH
+	File: /modules/rds/main.tf:29-33
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		29 | resource "aws_secretsmanager_secret" "rds_password" {
+		30 |   for_each   = random_password.rds
+		31 |   name       = "${each.key}-rds-password"
+		32 |   description = "RDS master password for ${each.key}"
+		33 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_security_group.this
+	Severity: HIGH
+	File: /modules/rds/main.tf:41-65
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		41 | resource "aws_security_group" "this" {
+		42 |   for_each    = var.security_group_ids == null ? var.instances : {}
+		43 |   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		44 |   description = "Security group for ${each.key} RDS instance"
+		45 |   vpc_id      = var.vpc_id
+		46 | 
+		47 |   ingress {
+		48 |     # Dynamically look up the port based on the instance's engine type
+		49 |     from_port   = lookup(local.engine_ports, each.value.engine, 0)
+		50 |     to_port     = lookup(local.engine_ports, each.value.engine, 0)
+		51 |     protocol    = "tcp"
+		52 |     cidr_blocks = each.value.allowed_cidr_blocks
+		53 |   }
+		54 | 
+		55 |   egress {
+		56 |     from_port   = 0
+		57 |     to_port     = 0
+		58 |     protocol    = "-1"
+		59 |     cidr_blocks = ["0.0.0.0/0"]
+		60 |   }
+		61 | 
+		62 |   tags = merge(var.tags, {
+		63 |     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+		64 |   })
+		65 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_db_instance.managed_password
+	Severity: HIGH
+	File: /modules/rds/main.tf:68-112
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		68  | resource "aws_db_instance" "managed_password" {
+		69  |   for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+		70  | 
+		71  |   allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+		72  |   backup_retention_period     = each.value.backup_retention_period
+		73  |   backup_window               = each.value.backup_window
+		74  |   db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+		75  |   db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+		76  |   deletion_protection         = each.value.deletion_protection
+		77  |   engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+		78  |   engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+		79  |   final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+		80  |   identifier                  = each.value.name
+		81  |   instance_class              = each.value.instance_class
+		82  |   kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+		83  |   maintenance_window          = each.value.maintenance_window
+		84  |   manage_master_user_password = true
+		85  |   multi_az                    = each.value.multi_az
+		86  |   snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+		87  |   storage_type                = each.value.storage_type
+		88  |   storage_encrypted           = each.value.storage_encrypted
+		89  |   skip_final_snapshot         = each.value.skip_final_snapshot
+		90  |   username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
+		91  |   enabled_cloudwatch_logs_exports = lookup(each.value, "enabled_cloudwatch_logs_exports", [])
+		92  | 
+		93  |   vpc_security_group_ids = concat(
+		94  |     [
+		95  |       var.security_group_ids != null ?
+		96  |       data.aws_security_group.existing[each.key].id :
+		97  |       aws_security_group.this[each.key].id
+		98  |     ],
+		99  |     var.vpc_security_group_ids
+		100 |   )
+		101 | 
+		102 |   tags = merge(var.tags, {
+		103 |     Name = each.value.name
+		104 |     source-repo = var.source-repo
+		105 |   })
+		106 | 
+		107 |   timeouts {
+		108 |     create = "90m"
+		109 |     update = "90m"
+		110 |     delete = "90m"
+		111 |   }
+		112 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_db_instance.custom_password
+	Severity: HIGH
+	File: /modules/rds/main.tf:114-165
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		Code lines for this resource are too many. Please use IDE of your choice to review the file.
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_iam_role.this
+	Severity: HIGH
+	File: /modules/runner-iam/main.tf:29-37
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		29 | resource "aws_iam_role" "this" {
+		30 |   name               = var.role_name
+		31 |   assume_role_policy = data.aws_iam_policy_document.eks_trust_policy.json
+		32 | 
+		33 |   tags = merge(var.tags, {
+		34 |     Name = var.role_name
+		35 |     source-repo = var.source-repo
+		36 |   })
+		37 | }
+
+Check: CCL_COSMOS_FINOPS_TAGS: "Ensure resources have required tag associated for Costing"
+	FAILED for resource: aws_eks_pod_identity_association.this
+	Severity: HIGH
+	File: /modules/runner-iam/main.tf:40-46
+	Guide: All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags
+
+		40 | resource "aws_eks_pod_identity_association" "this" {
+		41 |   depends_on      = [aws_iam_role.this]
+		42 |   cluster_name    = var.cluster_name
+		43 |   namespace       = var.namespace
+		44 |   service_account = var.role_name
+		45 |   role_arn        = aws_iam_role.this.arn
+		46 | }
+
+github_actions scan results:
+
+Passed checks: 416, Failed checks: 0, Skipped checks: 0
+

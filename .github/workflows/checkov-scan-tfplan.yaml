@@ -30,6 +30,9 @@ on:
         type: string
         required: false
         default: 'UKHomeOffice'
+      TF_VAR_source-repo:
+        required: true
+        type: string
     secrets:
       account_id:
         required: false
@@ -59,6 +62,13 @@ jobs:
         run: |
           mkdir -p central-checkov-policies
           mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
+
+      - name: Checkout Checkov Map File
+        uses: actions/checkout@v4
+        with:
+          repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
+          ref: 'checkov-mapping-updates'
+          path: 'checkout-checkov-mapping-updates'
 
       - uses: aws-actions/configure-aws-credentials@v4
         id: assume
@@ -91,6 +101,7 @@ jobs:
           tg_command: 'run-all plan --terragrunt-out-dir /github/workspace/outputs/${{ inputs.path }} --terragrunt-json-out-dir /github/workspace/outputs/${{ inputs.path }}'
         timeout-minutes: 20
         env:
+          TF_VAR_source-repo: ${{ inputs.TF_VAR_source-repo }}
           TF_VAR_env_name: ${{ inputs.env_name }}
           env_name: ${{ inputs.env_name }}
 
@@ -113,13 +124,6 @@ jobs:
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
           download_external_modules: true
 
-      - name: Upload SARIF file (Plan Files)
-        if: ${{ inputs.plan_role != '' && (success() || failure()) }}
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'results-plan.sarif'
-          category: 'checkov-plan-scan'
-
       - name: Run Checkov Scan
         id: checkov_scan
         uses: bridgecrewio/checkov-action@v12
@@ -136,6 +140,26 @@ jobs:
           output_file_path: results-root.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Fix File Permissions
+        run: sudo chown -R $USER:$USER results-plan.sarif results-root.sarif
+
+      - name: Process SARIF file
+        run: python3 -u checkout-checkov-mapping-updates/scripts/update-via-map-file.py
+        env:
+          SARIF_DIRS: "results-plan.sarif,results-root.sarif"
+
+      - name: Upload SARIF file (Plan Files)
+        if: ${{ inputs.plan_role != '' && (success() || failure()) }}
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'results-plan.sarif'
+          category: 'checkov-plan-scan'
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
