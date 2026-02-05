@@ -19,6 +19,13 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout reusable workflow for custom policies
+      uses: actions/checkout@v4
+      with:
+        repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
+        ref: ${{ inputs.version-tag }}
+        path: 'checkout-central-checkov-policies'
+
     - name: Checkout custom policies
       uses: actions/checkout@v4
       with:
@@ -32,6 +39,13 @@ runs:
         mkdir -p central-checkov-policies
         mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
+    - name: Checkout Checkov Map File
+      uses: actions/checkout@v4
+      with:
+        repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
+        ref: 'checkov-mapping-updates'
+        path: 'checkout-checkov-mapping-updates'
+
     - name: Run Checkov Scan
       id: checkov_scan
       uses: bridgecrewio/checkov-action@v12
@@ -43,7 +57,19 @@ runs:
         output_file_path: results.sarif
         external_checks_dirs: central-checkov-policies
         skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
-        download_external_modules: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Fix File Permissions
+      shell: bash
+      run: sudo chown -R $USER:$USER results.sarif
+
+    - name: Process SARIF file
+      shell: bash
+      run: python3 -u checkout-checkov-mapping-updates/scripts/update-via-map-file.py
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v3
