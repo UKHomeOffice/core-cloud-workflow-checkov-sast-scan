@@ -6,14 +6,10 @@ from pathlib import Path
 
 CWD = Path(os.getcwd())
 
-CSV_MAP_FILE = CWD / "checkov_map.csv"
-INPUT_SARIF  = CWD / "results.sarif" / "results_sarif.sarif"
-OUTPUT_SARIF = CWD / "results.sarif" / "results_enriched.sarif"
-INPUT_TXT    = CWD / "results.sarif" / "results_cli.txt"
-OUTPUT_TXT   = CWD / "results.sarif" / "results_updated.txt"
+SARIF_DIR_NAME = os.environ.get("SARIF_DIR", "results.sarif")
+SARIF_DIR_PATH = CWD / SARIF_DIR_NAME
 
-print(f"Script running in: {CWD}")
-print(f"Looking for SARIF at: {INPUT_SARIF}")
+CSV_MAP_FILE = "checkout-checkov-mapping-updates/checkov_map.csv"
 
 SEVERITY_TO_SCORE = {
     "INFO": "0.0",
@@ -45,6 +41,10 @@ def load_severity_map(csv_path):
             
             rule_id = row[0].strip()
             severity_text = row[1].strip().upper()
+
+            # GHA doesn't have an INFO severity level, so substitute for LOW
+            if severity_text == "INFO":
+                severity_text = "LOW"
             
             if severity_text in SEVERITY_TO_SCORE:
                 mapping[rule_id] = severity_text
@@ -152,9 +152,36 @@ def main():
         print("Severity map invalid or missing")
         return
 
-    update_sarif(INPUT_SARIF, OUTPUT_SARIF, severity_map)
-    update_text_report(INPUT_TXT, OUTPUT_TXT, severity_map)
-    
+    dirs_env = os.environ.get("SARIF_DIRS", "results.sarif")
+    target_dirs = [d.strip() for d in dirs_env.split(",") if d.strip()]
+
+    print(f"Processing {len(target_dirs)} directories: {target_dirs}")
+
+    for dir_name in target_dirs:
+        base_dir = CWD / dir_name
+        
+        input_sarif = base_dir / "results_sarif.sarif"
+        output_sarif = base_dir / "results_enriched.sarif"
+        input_txt = base_dir / "results_cli.txt"
+        output_txt = base_dir / "results_updated.txt"
+
+        print(f"\n--- Processing Directory: {dir_name} ---")
+
+        update_sarif(input_sarif, output_sarif, severity_map)
+        update_text_report(input_txt, output_txt, severity_map)
+
+        try:
+            if input_sarif.exists():
+                input_sarif.unlink()
+                print(f" - Deleted {input_sarif.name}")
+
+            if input_txt.exists():
+                input_txt.unlink()
+                print(f" - Deleted {input_txt.name}")
+
+        except Exception as e:
+            print(f"Warning: Could not delete input files in {dir_name}: {e}")
+
     print("Completed Successfully")
 
 if __name__ == "__main__":
