@@ -1,4 +1,4 @@
-name: SAST Scans
+name: Checkov and Sonarqube Scans
  
 on:
   workflow_call:
