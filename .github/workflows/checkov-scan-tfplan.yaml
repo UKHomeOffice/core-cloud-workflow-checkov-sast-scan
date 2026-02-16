@@ -62,6 +62,7 @@ jobs:
         run: |
           mkdir -p central-checkov-policies
           mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
+          mv checkout-central-checkov-policies/finops-policies finops-policies
 
       - name: Checkout Checkov Map File
         uses: actions/checkout@v4
@@ -122,6 +123,19 @@ jobs:
           output_file_path: results-plan.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28
+          download_external_modules: true
+
+      - name: Run Checkov Scan (FinOps policies only)
+        if: ${{ inputs.plan_role != '' }}
+        id: checkov_scan_finops
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          output_format: cli
+          quiet: true
+          soft_fail: true
+          directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
+          framework: terraform_plan
+          external_checks_dirs: finops-policies
           download_external_modules: true
 
       - name: Run Checkov Scan
