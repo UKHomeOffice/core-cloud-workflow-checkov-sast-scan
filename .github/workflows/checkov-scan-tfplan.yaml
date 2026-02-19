@@ -146,13 +146,23 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Fix File Permissions
-        run: sudo chown -R $USER:$USER results-plan.sarif results-root.sarif
+      - name: Fix File Permissions (Repository Root)
+        run: sudo chown -R $USER:$USER results-root.sarif
 
-      - name: Process SARIF file
+      - name: Fix File Permissions (Plan files)
+        if: ${{ inputs.plan_role != '' }}
+        run: sudo chown -R $USER:$USER results-plan.sarif
+
+      - name: Process SARIF file (Repository Root)
         run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
         env:
-          SARIF_DIRS: "results-plan.sarif,results-root.sarif"
+          SARIF_DIRS: "results-root.sarif"
+
+      - name: Process SARIF file (Plan files)
+        if: ${{ inputs.plan_role != '' }}
+        run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
+        env:
+          SARIF_DIRS: "results-plan.sarif"
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
