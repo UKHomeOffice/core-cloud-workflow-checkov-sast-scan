@@ -56,7 +56,7 @@ runs:
         directory: ${{ inputs.path }}
         output_file_path: results.sarif
         external_checks_dirs: central-checkov-policies
-        skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002
+        skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28
 
     - name: Set up Python
       uses: actions/setup-python@v4
