@@ -30,7 +30,7 @@ The simplest config to use is:
        checkov-scan:
          uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.5.0
 
-## Inplementation for Terraform Plan files
+## Implementation for Terraform Plan files
 
 Add the above config into the following directory in your repository `.github/workflow/checkov-scan-tfplan.yaml`, or build into your own workflow logic if more complex. For scanning Terraform Plan files as well, please use:
 
