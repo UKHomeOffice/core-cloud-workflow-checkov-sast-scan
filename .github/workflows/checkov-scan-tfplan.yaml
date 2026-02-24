@@ -137,6 +137,7 @@ jobs:
           framework: terraform_plan
           external_checks_dirs: finops-policies
           download_external_modules: true
+          check: CC_FINOPS_TAGS
 
       - name: Run Checkov Scan
         id: checkov_scan
