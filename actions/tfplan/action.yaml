@@ -1,0 +1,141 @@
+# This workflow is for scanning your Terraform Plan file/s with Checkov
+# Environment variables are currently used instead of a Checkov config file as all options are available and it saves having to add additional steps for checking out the repo with a token.
+# https://github.com/bridgecrewio/checkov-action/blob/master/action.yml
+
+name: Checkov Reusable Plan Scan
+
+inputs:
+  plan_role:
+    required: true
+    type: string
+  env_name:
+    required: false
+    type: string
+  path:
+    required: false
+    type: string
+  version-tag:
+    required: false
+    type: string
+    default: 'main'
+  runner:
+    description: 'For use with a specific runner'
+    type: string
+    required: false
+    default: 'ubuntu-latest'
+  org:
+    description: 'Set if using GHES instance'
+    type: string
+    required: false
+    default: 'UKHomeOffice'
+  TF_VAR_source-repo:
+    required: true
+    type: string
+  account_id:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Checkout reusable workflow for custom policies
+      uses: actions/checkout@v4
+      with:
+        repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
+        ref: ${{ inputs.version-tag }}
+        path: 'checkout-central-checkov-policies'
+
+    - name: Move policies
+      shell: bash
+      run: |
+        mkdir -p central-checkov-policies
+        mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
+
+    - name: Checkout Checkov Map File
+      uses: actions/checkout@v4
+      with:
+        repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
+        ref: 'checkov-mapping-updates'
+        path: 'checkout-checkov-mapping-updates'
+
+    - uses: aws-actions/configure-aws-credentials@v4
+      id: assume
+      if: ${{ inputs.plan_role != '' }}
+      name: Configure AWS IdP Credentials
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.account_id }}:role/${{ inputs.plan_role }}
+        role-session-name: GitHubActions
+        retry-max-attempts: 5
+        aws-region: eu-west-2
+
+    - name: Setup Terraform
+      if: ${{ inputs.plan_role != '' }}
+      id: terraform_setup
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Create output folder
+      shell: bash
+      if: ${{ inputs.plan_role != '' }}
+      id: create_output_folder
+      run: mkdir -p $GITHUB_WORKSPACE/outputs/$PATH_INPUT
+      env:
+        PATH_INPUT: ${{ inputs.path }}
+
+    - name: Terragrunt Plan
+      if: ${{ inputs.plan_role != '' }}
+      id: terraform_plan
+      uses: gruntwork-io/terragrunt-action@v2
+      with:
+        tf_version: 1.9.3
+        tg_version: 0.59.6
+        tg_dir: ./${{ inputs.path }}
+        tg_command: 'run-all plan --terragrunt-out-dir /github/workspace/outputs/${{ inputs.path }} --terragrunt-json-out-dir /github/workspace/outputs/${{ inputs.path }}'
+      env:
+        TF_VAR_source-repo: ${{ inputs.TF_VAR_source-repo }}
+        TF_VAR_env_name: ${{ inputs.env_name }}
+        env_name: ${{ inputs.env_name }}
+
+    - name: Run Checkov Scan (Plan Files)
+      if: ${{ inputs.plan_role != '' }}
+      id: checkov_scan_plan
+      uses: bridgecrewio/checkov-action@v12
+      with:
+       output_format: cli,sarif
+       quiet: true
+       # Enabling soft_fail temporarily for easier adoption. Once repos are compliant, remove this and use skip_check or soft_fail_on containing the global suppression list agreed by the SWG.
+       soft_fail: true
+       # Use skip_check if we don't want the check to appear in the console.
+       # Use soft_fail_on when we want to make the suppressed check known e.g. for future mitigation.
+       # skip_check: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
+       # soft_fail_on: CKV_AWS_EXAMPLE1,CKV_AWS_EXAMPLE2
+       directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
+       output_file_path: results-plan.sarif
+       external_checks_dirs: central-checkov-policies
+       skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28
+       download_external_modules: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Fix File Permissions (Plan files)
+      shell: bash
+      if: ${{ inputs.plan_role != '' }}
+      run: sudo chown -R $USER:$USER results-plan.sarif
+
+    - name: Process SARIF file (Plan files)
+      shell: bash
+      if: ${{ inputs.plan_role != '' }}
+      run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
+      env:
+        SARIF_DIRS: "results-plan.sarif"
+
+    - name: Upload SARIF file (Plan Files)
+      if: ${{ inputs.plan_role != '' && (success() || failure()) }}
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'results-plan.sarif'
+        category: 'checkov-plan-scan'

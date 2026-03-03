@@ -1,0 +1,56 @@
+name: Checkov Scan
+on:
+  workflow_call:
+    inputs:
+      plan_role:
+        required: true
+        type: string
+      env_name:
+        required: false
+        type: string
+      path:
+        required: false
+        type: string
+      version-tag:
+        required: false
+        type: string
+        default: 'main'
+      runner:
+        description: 'For use with a specific runner'
+        type: string
+        required: false
+        default: 'ubuntu-latest'
+      org:
+        description: 'Set if using GHES instance'
+        type: string
+        required: false
+        default: 'UKHomeOffice'
+      TF_VAR_source-repo:
+        required: true
+        type: string
+    secrets:
+      account_id:
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+  actions: read
+  security-events: write
+
+jobs:
+  checkov-scan-tfplan-only:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.env_name }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Run Checkov TFPlan Only Scan
+        uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/actions/tfplan@main
+        with:
+          plan_role: ${{ inputs.plan_role }} 
+          path: ${{ inputs.path }}
+          env_name: ${{ inputs.env_name }}
+          TF_VAR_source-repo: ${{ inputs.TF_VAR_source-repo }}
+          account_id: ${{ secrets.account_id }}

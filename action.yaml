@@ -6,10 +6,12 @@ inputs:
     description: 'The path to the directory to scan.'
     required: false
     default: '.'
+    type: string
   version-tag:
     description: 'The git ref of the central policies repo to use.'
     required: false
     default: 'main'
+    type: string
   org:
     description: 'Set if using GHES instance'
     type: string

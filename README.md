@@ -11,7 +11,9 @@ This is a reusable workflow for SAST scanning source code and artifacts. This is
 There are 2 Checkov reusable workflow files that your workflow can use. NOTE: These are for informational purposes only.
 
 1. [checkov-scan-base.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/blob/main/.github/workflows/checkov-scan-base.yaml) - For scanning [compatible](https://spacelift.io/blog/what-is-checkov#what-is-checkov) source code at rest.
-2. [checkov-scan-tfplan.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/blob/main/.github/workflows/checkov-scan-tfplan.yaml) - Only to be used for scanning Terraform plan files.
+2. [checkov-scan-tfplan.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/blob/main/.github/workflows/checkov-scan-tfplan.yaml) - To be used for scanning Terraform plan files and source code.
+3. [checkov-scan-tfplan-only.yaml](https://github.com/UKHomeOffice/core-cloud-workflow-checkov-sast-scan/blob/main/.github/workflows/checkov-scan-tfplan-only.yaml) - To be used for scanning just the Terraform plan files.
+
 ## Implementation for source code 
 The simplest config to use is:
 
@@ -30,7 +32,7 @@ The simplest config to use is:
        checkov-scan:
          uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.5.0
 
-## Implementation for Terraform Plan files
+## Implementation for Terraform Plan files and source code.
 
 Add the above config into the following directory in your repository `.github/workflow/checkov-scan-tfplan.yaml`, or build into your own workflow logic if more complex. For scanning Terraform Plan files as well, please use:
 
@@ -66,9 +68,63 @@ Add the above config into the following directory in your repository `.github/wo
            path: 'e.g. terraform/environment/sandbox-ops-tooling'
            env_name: 'e.g. sandbox-ops-tooling'
            plan_role: '<role with permissions for generating a plan>'
+           TF_VAR_source-repo: ${{ inputs.TF_VAR_source-repo }}
          # Github secret containing the AWS Account ID.
          secrets:
            account_id: ${{ e.g secrets.corecloud_sandbox_ops_tooling_account_id }}
+
+## Implementation for tfplan files only
+
+     name: "Checkov SAST Scan for Terraform .tfplan files as well as source code"
+
+     on:
+       workflow_dispatch:
+       push:
+         branches:
+           - '*'
+         paths:
+           - ./**
+       pull_request:
+         branches:
+           - main
+         types:
+           - opened
+           - synchronize
+         paths:
+           - ./**
+
+     permissions:
+       contents: read
+       id-token: write
+       actions: read
+       security-events: write
+
+     jobs:
+       sast-checkov-scan-tfplan-files:
+         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-tfplan-only.yaml@1.14.0
+         with:
+           # Optional inputs depending on code structure
+           plan_role: '<role with permissions for generating a plan>'
+           path: 'e.g. terraform/environment/sandbox-ops-tooling'
+           env_name: 'e.g. sandbox-ops-tooling'
+           TF_VAR_source-repo: ${{ inputs.TF_VAR_source-repo }}
+         # Github secret containing the AWS Account ID.
+         secrets:
+           account_id: ${{ secrets.ACCOUNT_ID }}
+
+       sast-sonar-scan:
+         uses: ./.github/workflows/sonarqube-scan.yaml
+         secrets:
+           sonar_token: ${{ secrets.sonar_token }}
+           sonar_host_url: ${{ secrets.sonar_host_url }}
+
+       terragrunt-standard-pipeline:
+         # Should always be used to prevent state lock issues with checkov tfplan scan
+         needs: [sast-checkov-scan-tfplan-files,sast-sonar-scan]
+         uses: UKHomeOffice/core-cloud-workflow-terragrunt-actions/.github/workflows/standard-pipeline.yml@main
+         with:
+           github-environment: 'e.g. sandbox-ops-tooling'
+           # etc etc 
 
 ## Custom Policies
 
