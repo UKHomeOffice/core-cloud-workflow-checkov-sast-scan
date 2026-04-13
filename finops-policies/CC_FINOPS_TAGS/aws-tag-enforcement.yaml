@@ -2,7 +2,7 @@ metadata:
   name: "Ensure resources have required tag associated for Costing"
   id: "CC_FINOPS_TAGS"
   category: "CONVENTION"
-  guideline: "All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/display/CORE/Core+Cloud+Tags"
+  guideline: "All resources must have the mandatory tags as specified here: https://collaboration.homeoffice.gov.uk/x/vDciEw"
   severity: "HIGH"
 definition:
   and:
