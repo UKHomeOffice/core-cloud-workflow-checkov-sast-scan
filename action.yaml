@@ -75,7 +75,7 @@ runs:
       run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
 
     - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
+      uses: github/codeql-action/upload-sarif@v4
       with:
         sarif_file: 'results.sarif'
         category: 'checkov-sast-scan'
