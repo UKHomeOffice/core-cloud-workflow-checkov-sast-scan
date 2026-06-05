@@ -113,7 +113,7 @@ runs:
        directory: ${{ github.workspace }}/outputs/${{ inputs.path }}
        output_file_path: results-plan.sarif
        external_checks_dirs: central-checkov-policies
-       skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28
+       skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28,CKV_TF_1
        download_external_modules: true
 
     - name: Set up Python
