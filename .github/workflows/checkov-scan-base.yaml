@@ -27,6 +27,11 @@ on:
         type: string
         required: false
         default: 'UKHomeOffice'
+      download_external_modules:
+        description: 'Download external Terraform modules during scan'
+        type: boolean
+        required: false
+        default: false
     secrets:
       account_id:
         required: false
@@ -80,6 +85,7 @@ jobs:
           output_file_path: results.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28,CKV_TF_1
+          download_external_modules: ${{ inputs.download_external_modules }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
