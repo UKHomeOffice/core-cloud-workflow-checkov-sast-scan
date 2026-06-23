@@ -36,7 +36,7 @@ on:
         required: false
         default: false
       TF_VAR_source-repo:
-        required: true
+        required: false
         type: string
     secrets:
       account_id:
