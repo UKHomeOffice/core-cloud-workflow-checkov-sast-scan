@@ -139,3 +139,5 @@ runs:
       with:
         sarif_file: 'results-plan.sarif'
         category: 'checkov-plan-scan'
+        ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
+        sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
