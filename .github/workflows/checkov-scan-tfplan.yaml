@@ -191,10 +191,14 @@ jobs:
         with:
           sarif_file: 'results-plan.sarif'
           category: 'checkov-plan-scan'
+          ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
+          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'results-root.sarif'
-          category: 'checkov-repo-scan' 
+          category: 'checkov-repo-scan'
+          ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
+          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}

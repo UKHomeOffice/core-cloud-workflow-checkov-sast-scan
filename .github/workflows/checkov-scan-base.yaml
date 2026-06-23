@@ -103,4 +103,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: 'results.sarif'
-          category: 'checkov-scan' 
+          category: 'checkov-scan'
+          ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
+          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
