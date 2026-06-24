@@ -101,7 +101,7 @@ jobs:
       - name: Determine commit SHA for SARIF upload
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          SHA=$(git rev-parse --verify HEAD^2 2>/dev/null) || true
+          SHA=$(python3 -c "import os,json; d=json.load(open(os.environ['GITHUB_EVENT_PATH'])); print(d['pull_request']['head']['sha'])" 2>/dev/null) || true
           if [ -z "$SHA" ]; then SHA=$(git rev-parse HEAD); fi
           printf 'SARIF_COMMIT_SHA=%s\n' "$SHA" >> "$GITHUB_ENV"
 
