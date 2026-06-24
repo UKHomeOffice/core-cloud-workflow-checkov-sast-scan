@@ -189,7 +189,12 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           SHA=$(git cat-file -p HEAD | grep '^parent' | sed -n '2p' | awk '{print $2}')
-          if [ -z "$SHA" ]; then SHA=$(git rev-parse HEAD); fi
+          if [ -n "$SHA" ]; then
+            PR_NUMBER=$(echo "$GITHUB_REF" | sed 's|refs/pull/\([0-9]*\)/merge|\1|')
+            git fetch --depth=1 origin "refs/pull/${PR_NUMBER}/head" 2>/dev/null || true
+            git checkout "$SHA" 2>/dev/null || true
+          fi
+          [ -z "$SHA" ] && SHA=$(git rev-parse HEAD)
           printf 'SARIF_COMMIT_SHA=%s\n' "$SHA" >> "$GITHUB_ENV"
 
       - name: Upload SARIF file (Plan Files)
