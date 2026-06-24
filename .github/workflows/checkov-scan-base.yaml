@@ -98,6 +98,15 @@ jobs:
       - name: Process SARIF file
         run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
 
+      - name: Determine commit SHA for SARIF upload
+        id: sarif_sha
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "sha=$(git rev-parse HEAD^2 2>/dev/null || git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload SARIF file (Source Code)
         if: ${{ success() || failure() }}
         uses: github/codeql-action/upload-sarif@v4
@@ -105,4 +114,4 @@ jobs:
           sarif_file: 'results.sarif'
           category: 'checkov-scan'
           ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
-          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          sha: ${{ steps.sarif_sha.outputs.sha }}

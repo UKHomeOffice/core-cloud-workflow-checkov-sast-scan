@@ -185,6 +185,15 @@ jobs:
         env:
           SARIF_DIRS: "results-plan.sarif"
 
+      - name: Determine commit SHA for SARIF upload
+        id: sarif_sha
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "sha=$(git rev-parse HEAD^2 2>/dev/null || git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          else
+            echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
         uses: github/codeql-action/upload-sarif@v4
@@ -192,7 +201,7 @@ jobs:
           sarif_file: 'results-plan.sarif'
           category: 'checkov-plan-scan'
           ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
-          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          sha: ${{ steps.sarif_sha.outputs.sha }}
 
       - name: Upload SARIF file (Repository Root)
         if: ${{ success() || failure() }}
@@ -201,4 +210,4 @@ jobs:
           sarif_file: 'results-root.sarif'
           category: 'checkov-repo-scan'
           ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
-          sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          sha: ${{ steps.sarif_sha.outputs.sha }}
