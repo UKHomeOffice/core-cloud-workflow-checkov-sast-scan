@@ -134,14 +134,9 @@ runs:
         SARIF_DIRS: "results-plan.sarif"
 
     - name: Determine commit SHA for SARIF upload
-      id: sarif_sha
+      if: ${{ inputs.plan_role != '' && github.event_name == 'pull_request' }}
       shell: bash
-      run: |
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          echo "sha=$(git rev-parse HEAD^2 2>/dev/null || git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-        else
-          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-        fi
+      run: echo "SARIF_COMMIT_SHA=$(git rev-parse HEAD^2 2>/dev/null || git rev-parse HEAD)" >> "$GITHUB_ENV"
 
     - name: Upload SARIF file (Plan Files)
       if: ${{ inputs.plan_role != '' && (success() || failure()) }}
@@ -150,4 +145,4 @@ runs:
         sarif_file: 'results-plan.sarif'
         category: 'checkov-plan-scan'
         ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
-        sha: ${{ steps.sarif_sha.outputs.sha }}
+        sha: ${{ env.SARIF_COMMIT_SHA || github.sha }}
