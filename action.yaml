@@ -78,7 +78,7 @@ runs:
       if: ${{ github.event_name == 'pull_request' }}
       shell: bash
       run: |
-        SHA=$(git rev-parse HEAD^2 2>/dev/null) || true
+        SHA=$(git cat-file -p HEAD | grep '^parent' | sed -n '2p' | awk '{print $2}')
         if [ -z "$SHA" ]; then SHA=$(git rev-parse HEAD); fi
         printf 'SARIF_COMMIT_SHA=%s\n' "$SHA" >> "$GITHUB_ENV"
 
