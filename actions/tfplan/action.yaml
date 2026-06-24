@@ -133,6 +133,14 @@ runs:
       env:
         SARIF_DIRS: "results-plan.sarif"
 
+    - name: Determine commit SHA for SARIF upload
+      if: ${{ inputs.plan_role != '' && github.event_name == 'pull_request' }}
+      shell: bash
+      run: |
+        SHA=$(git rev-parse --verify HEAD^2 2>/dev/null) || true
+        if [ -z "$SHA" ]; then SHA=$(git rev-parse HEAD); fi
+        printf 'SARIF_COMMIT_SHA=%s\n' "$SHA" >> "$GITHUB_ENV"
+
     - name: Upload SARIF file (Plan Files)
       if: ${{ inputs.plan_role != '' && (success() || failure()) }}
       uses: github/codeql-action/upload-sarif@v3
@@ -140,4 +148,4 @@ runs:
         sarif_file: 'results-plan.sarif'
         category: 'checkov-plan-scan'
         ref: ${{ github.event_name == 'pull_request' && format('refs/pull/{0}/head', github.event.number) || github.ref }}
-        sha: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        sha: ${{ env.SARIF_COMMIT_SHA || github.sha }}
