@@ -187,7 +187,10 @@ jobs:
 
       - name: Determine commit SHA for SARIF upload
         if: ${{ github.event_name == 'pull_request' }}
-        run: echo "SARIF_COMMIT_SHA=$(git rev-parse HEAD^2 2>/dev/null || git rev-parse HEAD)" >> "$GITHUB_ENV"
+        run: |
+          SHA=$(git rev-parse --verify HEAD^2 2>/dev/null)
+          [ -z "$SHA" ] && SHA=$(git rev-parse HEAD)
+          printf 'SARIF_COMMIT_SHA=%s\n' "$SHA" >> "$GITHUB_ENV"
 
       - name: Upload SARIF file (Plan Files)
         if: ${{ inputs.plan_role != '' && (success() || failure()) }}
