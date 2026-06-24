@@ -137,8 +137,8 @@ runs:
       if: ${{ inputs.plan_role != '' && github.event_name == 'pull_request' }}
       shell: bash
       run: |
-        SHA=$(git rev-parse --verify HEAD^2 2>/dev/null)
-        [ -z "$SHA" ] && SHA=$(git rev-parse HEAD)
+        SHA=$(git rev-parse --verify HEAD^2 2>/dev/null) || true
+        if [ -z "$SHA" ]; then SHA=$(git rev-parse HEAD); fi
         printf 'SARIF_COMMIT_SHA=%s\n' "$SHA" >> "$GITHUB_ENV"
 
     - name: Upload SARIF file (Plan Files)
