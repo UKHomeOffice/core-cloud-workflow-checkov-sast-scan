@@ -99,7 +99,7 @@ jobs:
       - name: Terragrunt Plan
         if: ${{ inputs.plan_role != '' }}
         id: terraform_plan
-        uses: gruntwork-io/terragrunt-action@v2
+        uses: gruntwork-io/terragrunt-action@v3
         with:
           tf_version: 1.9.3
           tg_version: 0.59.6
