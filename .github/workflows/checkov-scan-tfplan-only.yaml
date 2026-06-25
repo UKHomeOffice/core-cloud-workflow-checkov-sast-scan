@@ -44,7 +44,7 @@ jobs:
     environment: ${{ inputs.env_name }}
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       
       - name: Run Checkov TFPlan Only Scan
         uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/actions/tfplan@main

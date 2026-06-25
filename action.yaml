@@ -22,14 +22,14 @@ runs:
   using: 'composite'
   steps:
     - name: Checkout reusable workflow for custom policies
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
         ref: ${{ inputs.version-tag }}
         path: 'checkout-central-checkov-policies'
 
     - name: Checkout custom policies
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
         ref: ${{ inputs.version-tag }}
@@ -43,7 +43,7 @@ runs:
         mv checkout-central-checkov-policies/finops-policies finops-policies
 
     - name: Checkout Checkov Map File
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
         ref: 'checkov-mapping-updates'

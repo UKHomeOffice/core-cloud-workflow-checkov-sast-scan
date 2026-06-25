@@ -48,10 +48,10 @@ jobs:
     environment: ${{ inputs.env_name || '' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Checkout reusable workflow for custom policies
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
           ref: ${{ inputs.version-tag }}
@@ -63,7 +63,7 @@ jobs:
           mv checkout-central-checkov-policies/central-checkov-policies central-checkov-policies
 
       - name: Checkout Checkov Map File
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: '${{ inputs.org }}/core-cloud-workflow-checkov-sast-scan'
           ref: 'checkov-mapping-updates'
