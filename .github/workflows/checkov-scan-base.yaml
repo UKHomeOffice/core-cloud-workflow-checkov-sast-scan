@@ -96,7 +96,7 @@ jobs:
         run: sudo chown -R $USER:$USER results.sarif
       
       - name: Process SARIF file
-        run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
+        run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file_new.py
 
       - name: Determine commit SHA for SARIF upload
         if: ${{ github.event_name == 'pull_request' }}

@@ -72,7 +72,7 @@ runs:
 
     - name: Process SARIF file
       shell: bash
-      run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
+      run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file_new.py
 
     - name: Determine commit SHA for SARIF upload
       if: ${{ github.event_name == 'pull_request' }}

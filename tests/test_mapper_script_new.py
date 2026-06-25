@@ -7,7 +7,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from scripts.update_via_map_file import (
+from scripts.update_via_map_file_new import (
     _update_rule_severity,
     _process_sarif_runs,
     _process_text_lines,
@@ -137,7 +137,7 @@ def test_update_text_report_file_not_found():
 
 # Test main function
 
-@patch("scripts.update_via_map_file.load_severity_map")
+@patch("scripts.update_via_map_file_new.load_severity_map")
 def test_main_no_severity_map(mock_load):
     # Test empty file
     mock_load.return_value = {}
@@ -147,12 +147,12 @@ def test_main_no_severity_map(mock_load):
     
     mock_load.assert_called_once()
 
-@patch("scripts.update_via_map_file.os.environ.get")
-@patch("scripts.update_via_map_file.load_severity_map")
-@patch("scripts.update_via_map_file.update_sarif")
-@patch("scripts.update_via_map_file.update_text_report")
-@patch("scripts.update_via_map_file.Path.exists")
-@patch("scripts.update_via_map_file.Path.unlink")
+@patch("scripts.update_via_map_file_new.os.environ.get")
+@patch("scripts.update_via_map_file_new.load_severity_map")
+@patch("scripts.update_via_map_file_new.update_sarif")
+@patch("scripts.update_via_map_file_new.update_text_report")
+@patch("scripts.update_via_map_file_new.Path.exists")
+@patch("scripts.update_via_map_file_new.Path.unlink")
 def test_main_successful_execution(mock_unlink, mock_exists, mock_update_txt, mock_update_sarif, mock_load, mock_env):
     # Mock test finds a valid severity
     mock_load.return_value = {"CKV_123": "HIGH"}

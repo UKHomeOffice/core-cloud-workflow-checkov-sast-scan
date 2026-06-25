@@ -175,7 +175,7 @@ jobs:
         run: sudo chown -R $USER:$USER results-plan.sarif
 
       - name: Process SARIF file (Repository Root)
-        run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file.py
+        run: python3 -u checkout-checkov-mapping-updates/scripts/update_via_map_file_new.py
         env:
           SARIF_DIRS: "results-root.sarif"
 
