@@ -89,7 +89,7 @@ jobs:
       - name: Setup Terraform
         if: ${{ inputs.plan_role != '' }}
         id: terraform_setup
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       - name: Create output folder
         if: ${{ inputs.plan_role != '' }}
