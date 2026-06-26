@@ -28,6 +28,10 @@ on:
       TF_VAR_source-repo:
         required: true
         type: string
+      repo_root_for_plan_enrichment:
+        description: 'Path to the Terraform root directory'
+        required: false
+        type: string
     secrets:
       account_id:
         required: false
@@ -54,3 +58,4 @@ jobs:
           env_name: ${{ inputs.env_name }}
           TF_VAR_source-repo: ${{ inputs.TF_VAR_source-repo }}
           account_id: ${{ secrets.account_id }}
+          repo_root_for_plan_enrichment: ${{ inputs.repo_root_for_plan_enrichment }}

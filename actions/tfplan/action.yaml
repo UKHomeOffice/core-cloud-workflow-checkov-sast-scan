@@ -33,6 +33,10 @@ inputs:
     type: string
   account_id:
     required: true
+  repo_root_for_plan_enrichment:
+    description: 'Path to the Terraform root directory'
+    required: false
+    type: string
 
 runs:
   using: 'composite'
@@ -115,6 +119,7 @@ runs:
        external_checks_dirs: central-checkov-policies
        skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28,CKV_TF_1
        download_external_modules: true
+       repo_root_for_plan_enrichment: ${{ inputs.repo_root_for_plan_enrichment }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
