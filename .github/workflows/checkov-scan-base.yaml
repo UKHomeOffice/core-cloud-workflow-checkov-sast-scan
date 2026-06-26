@@ -32,6 +32,14 @@ on:
         type: boolean
         required: false
         default: false
+      framework:
+        description: 'Checkov framework(s) to use (e.g. terraform_plan). Omit for auto-detection.'
+        type: string
+        required: false
+      repo_root_for_plan_enrichment:
+        description: 'Path to the Terraform root directory for plan enrichment.'
+        type: string
+        required: false
     secrets:
       account_id:
         required: false
@@ -86,6 +94,8 @@ jobs:
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28,CKV_TF_1
           download_external_modules: ${{ inputs.download_external_modules }}
+          framework: ${{ inputs.framework }}
+          repo_root_for_plan_enrichment: ${{ inputs.repo_root_for_plan_enrichment }}
 
       - name: Set up Python
         uses: actions/setup-python@v4

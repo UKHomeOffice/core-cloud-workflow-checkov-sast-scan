@@ -132,6 +132,7 @@ jobs:
           output_file_path: results-plan.sarif
           external_checks_dirs: central-checkov-policies
           skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28,CKV_TF_1
+          framework: terraform_plan
           download_external_modules: true
           repo_root_for_plan_enrichment: ${{ inputs.repo_root_for_plan_enrichment }}
 

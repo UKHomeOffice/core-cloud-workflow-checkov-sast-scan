@@ -21,6 +21,15 @@ inputs:
     description: 'Path to the Terraform root directory'
     required: false
     type: string
+  framework:
+    description: 'Checkov framework(s) to use (e.g. terraform_plan). Omit for auto-detection.'
+    required: false
+    type: string
+  download_external_modules:
+    description: 'Download external Terraform modules to honour inline skip annotations.'
+    required: false
+    default: 'false'
+    type: string
 
 runs:
   using: 'composite'
@@ -64,6 +73,9 @@ runs:
         output_file_path: results.sarif
         external_checks_dirs: central-checkov-policies
         skip_check: CKV_CCL_CUSTOM_001,CKV_CCL_CUSTOM_002,CKV_AWS_28,CKV_TF_1
+        framework: ${{ inputs.framework }}
+        download_external_modules: ${{ inputs.download_external_modules }}
+        repo_root_for_plan_enrichment: ${{ inputs.repo_root_for_plan_enrichment }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
