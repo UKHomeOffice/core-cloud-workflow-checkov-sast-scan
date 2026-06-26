@@ -17,6 +17,10 @@ inputs:
     type: string
     required: false
     default: 'UKHomeOffice'
+  repo_root_for_plan_enrichment:
+    description: 'Path to the Terraform root directory'
+    required: false
+    type: string
 
 runs:
   using: 'composite'
@@ -107,4 +111,5 @@ runs:
         external_checks_dirs: finops-policies
         download_external_modules: true
         check: CC_FINOPS_TAGS
+        repo_root_for_plan_enrichment: ${{ inputs.repo_root_for_plan_enrichment }}
 
